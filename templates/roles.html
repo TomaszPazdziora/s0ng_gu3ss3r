@@ -2,12 +2,15 @@
 
 <head>
     <link href="static/style.css" rel="stylesheet" />
-    <!-- <link href="static/roles.css" rel="stylesheet" /> -->
+    <link href="static/roles.css" rel="stylesheet" />
 </head>
 
 <body>
-    <div class="centered">
-        <button>a</button>
-        <button>b</button>
+    <h1>Who are you?</h1>
+    <div class="role_div">
+        <form method="POST" action="/">
+            <button class="role_btn" name="role" value="server">Server</button>
+            <button class="role_btn" name="role" value="player">Player</button>        
+        </form>
     </div>
 </body>
