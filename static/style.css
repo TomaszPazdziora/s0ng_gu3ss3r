@@ -1,0 +1,23 @@
+body {
+    background: #000;
+    font-family: "Proxima Nova", sans-serif;
+    color: #ffffff;
+}
+
+span {
+    font-size: 20px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+}
+
+.centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 20px;
+}
+
