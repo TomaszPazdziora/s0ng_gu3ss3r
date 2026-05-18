@@ -2,15 +2,13 @@ from flask import Flask, render_template, request, redirect, url_for
 from server import Server
 from player import Player
 from flask_socketio import SocketIO, emit
-from random import randint
-import time
 
 app  = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
+
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 server = Server()
-rand_songs = ['a', 'v', 'b', 'c', 'f', 'k', 'l', 'p']
 
 # ============= SERVER ROUTES =============
 @app.route("/", methods=["GET", "POST"])
@@ -39,30 +37,37 @@ def game(username):
 def create_user():
     global server
     if request.method == "POST":
-        print("user added")
         server.active = True
         username = request.form.get("username")
         server.players.append(Player(username))
-        print(f"player name: {username}")
         return redirect(url_for("game", username=username))
     return render_template("user.html")
 
 # ============= SOCKETS ROUTES =============
-@socketio.on("connect")
-def handle_connect():
-    print("CLIENT CONNECTED")
+@socketio.on("answer")
+def handle_answer(data):
+    global server
 
-@socketio.on("disconnect")
-def handle_connect():
-    print("CLIENT DISCONNECTED")
+    username = data["username"]
+    answer = data["answer"]
+
+    print(f"{username} answered {answer}")
+
+    for player in server.players:
+        if player.name == username:
+            if answer == server.correct_ans:
+                player.score += 1
+                print(f"{username} +1 point")
+            break
 
 def draw_songs():
     global server
+
     while True:
         if server.active:
-            songs_set = [rand_songs[randint(0, len(rand_songs)-1)] for _ in range(3)]
+            server.load_songs()
             socketio.emit("new_songs", {
-                "songs": songs_set
+                "songs": server.songs_set
             })
         socketio.sleep(3)
 

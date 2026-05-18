@@ -22,12 +22,30 @@
 
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script>
-        const socket = io();
+    const socket = io();
 
-        socket.on("new_songs", (data) => {
-            document.getElementById("btn1").innerText = data.songs[0];
-            document.getElementById("btn2").innerText = data.songs[1];
-            document.getElementById("btn3").innerText = data.songs[2];
+    const username = "{{ username }}";
+
+    function sendAnswer(answer) {
+        socket.emit("answer", {
+            username: username,
+            answer: answer
         });
-    </script>
+    }
+    
+    socket.on("new_songs", (data) => {
+        document.getElementById("btn1").innerText = data.songs[0];
+        document.getElementById("btn2").innerText = data.songs[1];
+        document.getElementById("btn3").innerText = data.songs[2];
+    });
+
+    document.getElementById("btn1").onclick = () =>
+        sendAnswer(document.getElementById("btn1").innerText);
+
+    document.getElementById("btn2").onclick = () =>
+        sendAnswer(document.getElementById("btn2").innerText);
+
+    document.getElementById("btn3").onclick = () =>
+        sendAnswer(document.getElementById("btn3").innerText);
+</script>
 </body>
