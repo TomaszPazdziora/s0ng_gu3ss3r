@@ -21,3 +21,4 @@ class Server():
     def __init__(self):
         self.name = SERVER_NAMES[randrange(len(SERVER_NAMES))]
         self.players = []
+        self.active = False

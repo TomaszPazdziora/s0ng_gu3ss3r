@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='game.css') }}">
+</head>
+
+<body>
+    <div>
+        <div class="row">
+            <span>Score: {{ score }}</span>
+            <span>Username: {{ username }}</span>
+        </div>
+        <h1 margin-top: 20vh>Guess the song name:</h1>
+        <button id="btn1" class="game_btn">Waiting...</button>
+        <br>
+        <button id="btn2" class="game_btn">Waiting...</button>
+        <br>
+        <button id="btn3" class="game_btn">Waiting...</button>
+        <br>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+
+        socket.on("new_songs", (data) => {
+            document.getElementById("btn1").innerText = data.songs[0];
+            document.getElementById("btn2").innerText = data.songs[1];
+            document.getElementById("btn3").innerText = data.songs[2];
+        });
+    </script>
+</body>

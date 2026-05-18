@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Players</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <h1>Players List</h1>
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>Name</th>
+            <th>Score</th>
+        </tr>
+        {% for player in players %}
+        <tr>
+            <td>{{ player.name }}</td>
+            <td>{{ player.score }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+</html>
