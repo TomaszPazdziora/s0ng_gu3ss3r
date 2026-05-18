@@ -13,9 +13,11 @@ SERVER_NAMES = [
     "Rap Rooftop",
     "LoFi Lounge",
     "Hardcore Hangar",
-    "Funk Factory"
+    "Funk Factory",
+    "Opera House",
 ]
 
 class Server():
     def __init__(self):
         self.name = SERVER_NAMES[randrange(len(SERVER_NAMES))]
+        self.players = []
