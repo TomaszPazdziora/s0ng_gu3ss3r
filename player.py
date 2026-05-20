@@ -3,4 +3,4 @@ class Player():
         self.name = name
         self.score = 0
         # to validate if player did not answer more then once per round
-        self.active = True
+        self.answered = False

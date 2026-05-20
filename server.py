@@ -17,6 +17,7 @@ SERVER_NAMES = [
     "Opera House",
 ]
 
+NOT_FOUND = -1
 rand_songs = ['a', 'v', 'b', 'c', 'f', 'k', 'l', 'p']
 
 class Server():
@@ -35,16 +36,32 @@ class Server():
         ]
         self.correct_ans = self.songs_set[0]
 
-    def validate_answer(self):
-        # check answers
-        pass
+        # clear answered indications and activate game round
+        self.round_active = True
+        for p in self.players:
+            p.answered = False
+
+    def validate_answer(self, username, ans):
+        if self.round_active:
+            idx = self._find_player_idx(username)
+            print(f"found idx: {idx}")
+            if idx != NOT_FOUND and self.players[idx].answered is not True:
+                self.players[idx].answered = True
+                if ans == self.correct_ans:
+                    self.players[idx].score += 1
+                    self.round_active = False
 
     def activate_server(self):
         # when scoreboard is running and all players are ready
         self.active = True
-        self.round_active = True
         pass
 
     def update_scoreboard(self):
         pass
 
+    def _find_player_idx(self, username):
+        idx = NOT_FOUND 
+        for i in range(len(self.players)):
+            if username == self.players[i].name:
+                return i
+        return idx

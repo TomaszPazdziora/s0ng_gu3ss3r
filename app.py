@@ -52,13 +52,8 @@ def handle_answer(data):
     answer = data["answer"]
 
     print(f"{username} answered {answer}")
+    server.validate_answer(username, answer)
 
-    for player in server.players:
-        if player.name == username:
-            if answer == server.correct_ans:
-                player.score += 1
-                print(f"{username} +1 point")
-            break
 
 def draw_songs():
     global server
@@ -69,7 +64,7 @@ def draw_songs():
             socketio.emit("new_songs", {
                 "songs": server.songs_set
             })
-        socketio.sleep(3)
+        socketio.sleep(20)
 
 if __name__ == "__main__":
     socketio.start_background_task(draw_songs)
