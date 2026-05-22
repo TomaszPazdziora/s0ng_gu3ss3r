@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
-from server import Server
+from server import Server, NOT_FOUND
 from player import Player
 from flask_socketio import SocketIO, emit
+import time
 
 app  = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"
@@ -31,7 +32,8 @@ def scoreboard():
 
 @app.route("/game/<username>")
 def game(username):
-    return render_template("game.html", username=username, score="420")
+    global server
+    return render_template("game.html", username=username, score=server.get_player_score(username), time="not started yet")
 
 @app.route("/create_user", methods=["GET", "POST"])
 def create_user():
@@ -56,7 +58,7 @@ def activate_server():
 def skip_song():
     global server
     if request.method == "POST":
-        server.reset_round(socketio)
+        server.reset_round()
     return redirect(url_for("scoreboard"))
 
 @app.route("/pause", methods=["GET", "POST"])
@@ -75,9 +77,9 @@ def handle_answer(data):
         username = data["username"]
         answer = data["answer"]
 
-        print(f"{username} answered {answer}")
+        print(f"{username} answered {answer} sid: {request.sid}")
         server.validate_answer(username, answer)
-
+        server.emit_single_player_score(socketio, username, request.sid)
 
 def game_loop():
     global server
@@ -85,7 +87,8 @@ def game_loop():
     while True:
         if server.active and server.paused is False:
             if server.round_active is False or server.is_round_time_elapsed():
-                server.reset_round(socketio)
+                server.reset_round()
+            server.emit_game_data(socketio)
         socketio.sleep(0.5)
 
 if __name__ == "__main__":

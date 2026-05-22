@@ -34,19 +34,16 @@ class Server():
         self.round_started_timestamp = 0
         self.paused = False
     
-    def reset_round(self, socketio):
+    def reset_round(self):
         self.songs_set = [
             rand_songs[randrange(len(rand_songs))]
-            for _ in range(3)
+            for _ in range(4)
         ]
-        self.correct_ans = self.songs_set[0]
+        self.correct_ans = self.songs_set[3]
 
         # clear answered indications and activate game round
         self.round_active = True
         self._make_players_active()
-        socketio.emit("new_songs", {
-            "songs": self.songs_set
-        })
         self.round_started_timestamp = time.time()
 
     def validate_answer(self, username, ans):
@@ -76,7 +73,23 @@ class Server():
 
     def update_scoreboard(self):
         pass
+
+    def get_player_score(self, username):
+        idx = self._find_player_idx(username)
+        score = 0
+        if idx != NOT_FOUND:
+            score = self.players[idx].score
+        return score
     
+    def emit_game_data(self, socketio):
+        socketio.emit("new_songs", {
+            "songs": self.songs_set,
+            "time": round(TIME_FOR_ROUND - (time.time() - self.round_started_timestamp))
+        })
+    
+    def emit_single_player_score(self, socketio, username, sid):
+        socketio.emit("score_update", {"score": self.get_player_score(username)}, to=sid)
+
     def _make_players_active(self):
         for p in self.players:
             p.answered = False
