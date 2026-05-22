@@ -1,4 +1,5 @@
 from random import randrange, randint
+import time
 
 SERVER_NAMES = [
     "Metal Cave",
@@ -17,6 +18,7 @@ SERVER_NAMES = [
     "Opera House",
 ]
 
+TIME_FOR_ROUND = 20
 NOT_FOUND = -1
 rand_songs = ['a', 'v', 'b', 'c', 'f', 'k', 'l', 'p']
 
@@ -28,6 +30,7 @@ class Server():
         self.correct_ans = -1
         self.songs_set = []
         self.round_active = False
+        self.sec_elapsed = 0
     
     def load_songs(self):
         self.songs_set = [
@@ -38,8 +41,8 @@ class Server():
 
         # clear answered indications and activate game round
         self.round_active = True
-        for p in self.players:
-            p.answered = False
+        self._make_players_active()
+        self.sec_elapsed = time.time()
 
     def validate_answer(self, username, ans):
         if self.round_active:
@@ -51,6 +54,9 @@ class Server():
                     self.players[idx].score += 1
                     self.round_active = False
 
+    def is_round_time_elapsed(self):
+        return True if time.time() - self.sec_elapsed > TIME_FOR_ROUND else False
+
     def activate_server(self):
         # when scoreboard is running and all players are ready
         self.active = True
@@ -58,6 +64,10 @@ class Server():
 
     def update_scoreboard(self):
         pass
+    
+    def _make_players_active(self):
+        for p in self.players:
+            p.answered = False
 
     def _find_player_idx(self, username):
         idx = NOT_FOUND 

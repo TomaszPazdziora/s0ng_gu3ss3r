@@ -60,11 +60,12 @@ def draw_songs():
 
     while True:
         if server.active:
-            server.load_songs()
-            socketio.emit("new_songs", {
-                "songs": server.songs_set
-            })
-        socketio.sleep(20)
+            if server.round_active is False or server.is_round_time_elapsed():
+                server.load_songs()
+                socketio.emit("new_songs", {
+                    "songs": server.songs_set
+                })
+        socketio.sleep(0.5)
 
 if __name__ == "__main__":
     socketio.start_background_task(draw_songs)
