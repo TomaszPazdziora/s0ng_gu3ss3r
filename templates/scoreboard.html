@@ -7,19 +7,37 @@
 </head>
 
 <body>
-    <h1>Players List</h1>
-    <table border="1" cellpadding="10">
-        <tr>
-            <th>Name</th>
-            <th>Score</th>
-        </tr>
-        {% for player in players %}
-        <tr>
-            <td>{{ player.name }}</td>
-            <td>{{ player.score }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-
+    <div align="center">
+        <h1>Choose your playlist:</h1>
+        <input placeholder="playlist id">
+        <br>
+        <form method="POST" action="/activate_server">
+            <button>Start</button>
+        </form>
+        <br>
+        <form method="POST" action="/pause">
+            <button>Pause</button>
+        </form>
+        <br>
+        <form method="POST" action="/skip_song">
+            <button>Skip song</button>
+        </form>
+        <br>
+        <button>Change playlist</button>
+        <br>
+        <h2>Scoreboard:</h2>
+        <table border="1" cellpadding="10">
+            <tr>
+                <th>Name</th>
+                <th>Score</th>
+            </tr>
+            {% for player in players %}
+            <tr>
+                <td>{{ player.name }}</td>
+                <td>{{ player.score }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
 </body>
 </html>

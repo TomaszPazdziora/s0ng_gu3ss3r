@@ -37,36 +37,57 @@ def game(username):
 def create_user():
     global server
     if request.method == "POST":
-        server.active = True
         username = request.form.get("username")
         server.players.append(Player(username))
         return redirect(url_for("game", username=username))
     return render_template("user.html")
 
+@app.route("/activate_server", methods=["GET", "POST"])
+def activate_server():
+    global server
+    if request.method == "POST":
+        if server.paused is True:
+            server.resume_round()
+        elif server.active is False:
+            server.activate_server()
+    return redirect(url_for("scoreboard"))
+
+@app.route("/skip_song", methods=["GET", "POST"])
+def skip_song():
+    global server
+    if request.method == "POST":
+        server.reset_round(socketio)
+    return redirect(url_for("scoreboard"))
+
+@app.route("/pause", methods=["GET", "POST"])
+def pause():
+    global server
+    if request.method == "POST":
+        server.pause_round()
+    return redirect(url_for("scoreboard"))
+
+
 # ============= SOCKETS ROUTES =============
 @socketio.on("answer")
 def handle_answer(data):
     global server
+    if server.active and server.paused is False:
+        username = data["username"]
+        answer = data["answer"]
 
-    username = data["username"]
-    answer = data["answer"]
-
-    print(f"{username} answered {answer}")
-    server.validate_answer(username, answer)
+        print(f"{username} answered {answer}")
+        server.validate_answer(username, answer)
 
 
-def draw_songs():
+def game_loop():
     global server
 
     while True:
-        if server.active:
+        if server.active and server.paused is False:
             if server.round_active is False or server.is_round_time_elapsed():
-                server.load_songs()
-                socketio.emit("new_songs", {
-                    "songs": server.songs_set
-                })
+                server.reset_round(socketio)
         socketio.sleep(0.5)
 
 if __name__ == "__main__":
-    socketio.start_background_task(draw_songs)
+    socketio.start_background_task(game_loop)
     socketio.run(app, host="0.0.0.0", port=5000)

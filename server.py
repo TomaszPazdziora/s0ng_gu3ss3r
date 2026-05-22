@@ -1,4 +1,5 @@
-from random import randrange, randint
+
+from random import randrange
 import time
 
 SERVER_NAMES = [
@@ -30,9 +31,10 @@ class Server():
         self.correct_ans = -1
         self.songs_set = []
         self.round_active = False
-        self.sec_elapsed = 0
+        self.round_started_timestamp = 0
+        self.paused = False
     
-    def load_songs(self):
+    def reset_round(self, socketio):
         self.songs_set = [
             rand_songs[randrange(len(rand_songs))]
             for _ in range(3)
@@ -42,7 +44,10 @@ class Server():
         # clear answered indications and activate game round
         self.round_active = True
         self._make_players_active()
-        self.sec_elapsed = time.time()
+        socketio.emit("new_songs", {
+            "songs": self.songs_set
+        })
+        self.round_started_timestamp = time.time()
 
     def validate_answer(self, username, ans):
         if self.round_active:
@@ -55,12 +60,19 @@ class Server():
                     self.round_active = False
 
     def is_round_time_elapsed(self):
-        return True if time.time() - self.sec_elapsed > TIME_FOR_ROUND else False
+        return True if time.time() - self.round_started_timestamp > TIME_FOR_ROUND else False
 
     def activate_server(self):
-        # when scoreboard is running and all players are ready
         self.active = True
-        pass
+
+    def pause_round(self):
+        self.paused = True
+        self.round_started_timestamp = time.time() - self.round_started_timestamp
+
+    def resume_round(self):
+        # resumes round with the same time delay
+        self.paused = False
+        self.round_started_timestamp = time.time() - self.round_started_timestamp
 
     def update_scoreboard(self):
         pass
