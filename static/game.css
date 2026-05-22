@@ -1,0 +1,11 @@
+.game_btn {
+    width: 70%;
+    height: 12vh;
+    margin-top: 10px;
+}
+
+.game_btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(30%);
+}

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='game.css') }}">
+</head>
+
+<body>
+    <div>
+        <div class="row">
+            <span id="sc">Score: {{ score }}</span>
+            <span>Username: {{ username }}</span>
+        </div>
+        <p id="time_counter">Time left: {{ time }}</p>
+        <h1 margin-top: 20vh>Guess the song name:</h1>
+        <button id="btn1" class="game_btn">Waiting...</button>
+        <br>
+        <button id="btn2" class="game_btn">Waiting...</button>
+        <br>
+        <button id="btn3" class="game_btn">Waiting...</button>
+        <br>
+        <button id="btn4" class="game_btn">Waiting...</button>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+    const socket = io();
+
+    const username = "{{ username }}";
+
+    function sendAnswer(answer) {
+        document.getElementById("btn1").disabled = true;
+        document.getElementById("btn2").disabled = true;
+        document.getElementById("btn3").disabled = true;
+        document.getElementById("btn4").disabled = true;
+
+        socket.emit("answer", {
+            username: username,
+            answer: answer
+        });
+    }
+    
+    socket.on("new_songs", (data) => {
+        document.getElementById("btn1").innerText = data.songs[0];
+        document.getElementById("btn2").innerText = data.songs[1];
+        document.getElementById("btn3").innerText = data.songs[2];
+        document.getElementById("btn4").innerText = data.songs[3];
+        document.getElementById("time_counter").innerText = "Time left: " + data.time;
+    });
+
+    socket.on("score_update", (data) => {
+        document.getElementById("sc").innerText = "Score: " + data.score;
+    });
+
+    socket.on('reset_round_ind', () => {
+        document.getElementById("btn1").disabled = false;
+        document.getElementById("btn2").disabled = false;
+        document.getElementById("btn3").disabled = false;
+        document.getElementById("btn4").disabled = false;
+    });
+
+    document.getElementById("btn1").onclick = () =>
+        sendAnswer(document.getElementById("btn1").innerText);
+
+    document.getElementById("btn2").onclick = () =>
+        sendAnswer(document.getElementById("btn2").innerText);
+
+    document.getElementById("btn3").onclick = () =>
+        sendAnswer(document.getElementById("btn3").innerText);
+    
+    document.getElementById("btn4").onclick = () =>
+        sendAnswer(document.getElementById("btn4").innerText);
+
+</script>
+</body>
