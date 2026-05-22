@@ -34,7 +34,7 @@ class Server():
         self.round_started_timestamp = 0
         self.paused = False
     
-    def reset_round(self):
+    def reset_round(self, socketio):
         self.songs_set = [
             rand_songs[randrange(len(rand_songs))]
             for _ in range(4)
@@ -44,6 +44,7 @@ class Server():
         # clear answered indications and activate game round
         self.round_active = True
         self._make_players_active()
+        socketio.emit("reset_round_ind")
         self.round_started_timestamp = time.time()
 
     def validate_answer(self, username, ans):

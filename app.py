@@ -58,7 +58,7 @@ def activate_server():
 def skip_song():
     global server
     if request.method == "POST":
-        server.reset_round()
+        server.reset_round(socketio)
     return redirect(url_for("scoreboard"))
 
 @app.route("/pause", methods=["GET", "POST"])
@@ -87,7 +87,7 @@ def game_loop():
     while True:
         if server.active and server.paused is False:
             if server.round_active is False or server.is_round_time_elapsed():
-                server.reset_round()
+                server.reset_round(socketio)
             server.emit_game_data(socketio)
         socketio.sleep(0.5)
 
